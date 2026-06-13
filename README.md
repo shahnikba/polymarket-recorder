@@ -75,7 +75,28 @@ PYTHONPATH=src python -m pmrec.main
 
 Frames accumulate under `./data/pending` until you set a real bucket.
 
-## Run on the server
+## Provision AWS in one command
+
+`deploy/provision-aws.sh` (run locally with admin AWS credentials) creates the
+S3 bucket, a 90-day → Glacier lifecycle rule, a least-privilege IAM role +
+instance profile (`s3:PutObject` on `polymarket/raw/*` only — nothing else), and
+an EC2 instance that bootstraps itself from `deploy/user-data.sh`:
+
+```bash
+BUCKET=my-polymarket-raw KEY_NAME=my-ec2-keypair ./deploy/provision-aws.sh
+# optional: REGION=us-east-1 INSTANCE_TYPE=t3.small SSH_CIDR=203.0.113.4/32 \
+#           REPO_URL=https://github.com/you/polymarket-recorder.git
+```
+
+If you pass `REPO_URL`, the instance clones the code and starts the service on
+first boot. Without it, the box is prepped and waits — `rsync` the code up, then
+`ssh ec2-user@<ip> 'sudo /opt/polymarket-recorder/finish-setup.sh'`. The script
+is idempotent; re-running it won't duplicate the bucket or IAM role.
+
+It defaults to **us-east-1** (best latency to Polymarket's infra). The recorder
+needs no inbound ports — `SSH_CIDR` is the only reason to open one.
+
+## Run on the server (manual)
 
 ```bash
 sudo mkdir -p /opt/polymarket-recorder && cd /opt/polymarket-recorder
