@@ -75,6 +75,17 @@ PYTHONPATH=src python -m pmrec.main
 
 Frames accumulate under `./data/pending` until you set a real bucket.
 
+## AWS identities (two separate things)
+
+- **Provisioner user** — the IAM user whose access keys you put in `aws configure`
+  to run `provision-aws.sh`. Create a *dedicated* IAM user for this (don't use
+  the root account). Attach either `AdministratorAccess` or, for tighter hygiene,
+  the scoped `deploy/iam-provisioner-policy.json` (exactly the S3/IAM/EC2/SSM
+  actions the script needs — including `iam:PassRole` for `pmrec-recorder`).
+- **`pmrec-recorder` role** — the EC2 instance role the recorder runs under;
+  `provision-aws.sh` creates it with `s3:PutObject` on the prefix and nothing
+  else. No keys ever live on the instance.
+
 ## Provision AWS in one command
 
 `deploy/provision-aws.sh` (run locally with admin AWS credentials) creates the
