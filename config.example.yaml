@@ -1,0 +1,40 @@
+# Copy to config.yaml and edit. Set PMREC_CONFIG to point elsewhere if you like.
+# AWS creds are NOT here: use an IAM role on the server, or AWS_* env / ~/.aws.
+
+endpoints:
+  gamma_base: "https://gamma-api.polymarket.com"
+  clob_base: "https://clob.polymarket.com"
+  ws_market: "wss://ws-subscriptions-clob.polymarket.com/ws/market"
+
+universe:
+  candidate_limit: 200        # top-N by 24h volume pulled from Gamma
+  target_size: 75             # final universe after book-depth refinement
+  refresh_interval_s: 900     # re-select every 15 min
+  min_seconds_to_resolution: 0
+  min_volume_24h: 0
+  min_liquidity: 0
+  refine_with_book_depth: true
+
+capture:
+  max_assets_per_connection: 50
+  ping_interval_s: 10
+  stale_after_s: 30
+  reconnect_base_s: 1
+  reconnect_max_s: 30
+  custom_feature_enabled: true
+
+archive:
+  spool_dir: "./data/spool"
+  pending_dir: "./data/pending"
+  rotate_interval_s: 300      # roll the current file every 5 min
+  rotate_max_bytes: 268435456 # or when it hits 256 MB
+
+s3:
+  bucket: "CHANGE_ME"         # leave as CHANGE_ME to keep files local for dev
+  prefix: "polymarket/raw"
+  flush_interval_s: 60
+  region: null
+  delete_after_upload: true
+
+rate_limit:
+  rest_min_interval_s: 1.2    # ~50 req/min, under the ~60/min Gamma budget
