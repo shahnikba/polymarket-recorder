@@ -2,6 +2,8 @@
 Description=Polymarket research data recorder
 After=network-online.target
 Wants=network-online.target
+# Capture is the source of truth; never rate-limit restarts (belongs in [Unit]).
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
@@ -13,8 +15,6 @@ Environment=PMREC_CONFIG=/opt/polymarket-recorder/config.yaml
 ExecStart=/opt/polymarket-recorder/.venv/bin/python -m pmrec.main
 Restart=always
 RestartSec=3
-# Capture is the source of truth; restart aggressively and never give up.
-StartLimitIntervalSec=0
 # Give it room; uploads + buffers are memory-light but be generous.
 LimitNOFILE=65536
 
