@@ -6,10 +6,15 @@
 #
 # Usage:
 #   BUCKET=my-polymarket-raw KEY_NAME=my-ec2-keypair ./deploy/provision-aws.sh
+#   # or with a named local profile instead of [default]:
+#   AWS_PROFILE=myprofile BUCKET=... KEY_NAME=... ./deploy/provision-aws.sh
 #
 # Required env:
 #   BUCKET     globally-unique S3 bucket name
 #   KEY_NAME   name of an existing EC2 key pair (for SSH)
+# Credentials: uses your default AWS profile, or set AWS_PROFILE=<name> to pick
+#   another. (This only affects the local aws CLI calls below — the EC2 instance
+#   itself authenticates via its IAM role, never a profile or keys.)
 # Optional env:
 #   REGION         (default us-east-1 — best latency to Polymarket)
 #   INSTANCE_TYPE  (default t3.small)
