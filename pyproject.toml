@@ -16,6 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+plot = ["matplotlib>=3.7"]   # for tools/plot_market.py
 
 [project.scripts]
 pmrec = "pmrec.main:main"

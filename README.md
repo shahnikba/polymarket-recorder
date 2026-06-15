@@ -142,6 +142,34 @@ cap), wraps each trade in the **same frame envelope** the live recorder uses
 so backfill and live capture land in one store with one schema. With
 `s3.bucket = CHANGE_ME` the files stay local in `data/pending` for inspection.
 
+## Charting recorded odds
+
+`tools/plot_market.py` reconstructs the implied-probability (best-bid/ask mid)
+time series for one or more markets straight from the gzipped frames in S3, and
+writes a PNG + CSV. It reads only your own archive, never the live market.
+
+```bash
+pip install -e ".[plot]"        # adds matplotlib
+
+# every "US x Iran permanent peace deal by <date>" market around the announcement
+python tools/plot_market.py --market "Iran permanent peace deal" \
+    --start 2026-06-14T20:00 --end 2026-06-14T23:00 \
+    --annotate 2026-06-14T21:16 "peace deal announced" --out iran_surge
+
+# one market by condition id, last 3 hours (the default window)
+python tools/plot_market.py --condition-id 0xABC...
+
+# offline / Gamma unavailable: chart specific token ids directly
+python tools/plot_market.py --token 5904…:"by June 15" --start ... --end ...
+```
+
+It resolves *which* tokens to chart via `--market` (Gamma question text; matching
+several markets draws one Yes line each — handy for date-laddered markets),
+`--condition-id`, or `--token` (skips Gamma). It auto-discovers exactly the S3
+files overlapping your window, so it never reads more than it needs. Bucket /
+prefix / region default to your `config.yaml`; AWS creds come from the usual
+chain (`AWS_PROFILE` / env / instance role).
+
 ## Tests
 
 ```bash
